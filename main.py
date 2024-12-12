@@ -2,11 +2,40 @@ from tkinter import *
 
 
 def set_status(text, color='black'):
+    canvas.itemconfig(text_id, text=text, fill=color)
     pass
 # Эта функция обновляет текстовую метку на холсте (Canvas), отображая текущее состояние игры.
 # Она принимает два аргумента: text — текст, который будет отображён, и color — цвет текста (по умолчанию чёрный).
 
 def key_handler(event):
+    if event.keycode == KEY_UP:
+        menu_up()
+    if event.keycode == KEY_DOWN:
+        menu_down()
+    if event.keycode == KEY_ENTER:
+        menu_enter()
+
+    if game_over:
+        return
+    if event.keycode == KEY_PAUSE:
+        pause_toggle()
+
+    if pause:
+        return
+    if event.keycode == KEY_ESC:
+        menu_toggle()
+
+    if menu_mode:
+        return
+
+    set_status('Вперед!')
+    if event.keycode == KEY_PLAYER1:
+        canvas.move(player1, SPEED, 0)
+    if event.keycode == KEY_PLAYER2:
+        canvas.move(player2, SPEED, 0)
+
+    check_finish()
+
     pass
 # Функция обрабатывает нажатия клавиш. Если игра уже завершена (game_over=True), то дальнейшие события игнорируются. В противном случае:
 #
@@ -16,6 +45,22 @@ def key_handler(event):
 # После каждого перемещения вызывается функция check_finish(), чтобы проверить, достиг ли какой-то игрок финиша.
 
 def check_finish():
+    global game_over
+    coords_player1 = canvas.coords(player1)
+    coords_player2 = canvas.coords(player2)
+    coords_finish = canvas.coords(finish_id)
+
+    x1_right = coords_player1[2]
+    x2_right = coords_player2[2]
+    x_finish = coords_finish[0]
+
+    if x1_right >= x_finish:
+        set_status('Победа верхнего игрока', player1_color)
+        game_over = True
+
+    if x2_right >= x_finish:
+        set_status('Победа нижнего игрока', player2_color)
+        game_over = True
     pass
 # Функция проверяет, достигли ли игроки финиша.
 # Для этого она получает координаты обоих игроков и финишной линии.
